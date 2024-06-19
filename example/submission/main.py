@@ -2,10 +2,14 @@
 
 from validator.validator import Validator
 
-io = Validator()
+val = Validator()
 
-a = io.obtain_data("Enter a number: ")
-b = io.obtain_data("Enter another number: ")
-sum = int(a) + int(b)
+total = 0
 
-io.push_data(str(sum))
+while True:
+    n = val.obtain_data()
+    if n == None:
+        break
+    total += n
+
+val.push_data(total)
