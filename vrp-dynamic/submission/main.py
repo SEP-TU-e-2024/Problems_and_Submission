@@ -11,6 +11,7 @@ import functools
 import tools
 from validator.validator import Validator
 from baselines.strategies import STRATEGIES
+from settings import CHOOSEN_STRATEGY, MODEL_PATH, VERBOSE
 
 def solve_static_vrptw(instance, time_limit=3600, tmp_dir="tmp", seed=1, initial_solution=None):
 
@@ -73,15 +74,23 @@ def solve_static_vrptw(instance, time_limit=3600, tmp_dir="tmp", seed=1, initial
 def run_baseline(validator: Validator, strategy=None, seed: int = 1):
     strategy = strategy
 
-    rng = np.random.default_rng(1)
+    rng = np.random.default_rng(seed)
 
     total_reward = 0
     done = False
     # Note: info contains additional info that can be used by your solver
     observation, _, _, static_info = validator.obtain_data()
     epoch_tlim = static_info['epoch_tlim']
+    num_requests_postponed = 0
     while not done:
         epoch_instance = observation['epoch_instance']
+
+        # Logging in info to stderr
+        if VERBOSE:
+            log(f"Epoch {static_info['start_epoch']} <= {observation['current_epoch']} <= {static_info['end_epoch']}", newline=False)
+            num_requests_open = len(epoch_instance['request_idx']) - 1
+            num_new_requests = num_requests_open - num_requests_postponed
+            log(f" | Requests: +{num_new_requests:3d} = {num_requests_open:3d}, {epoch_instance['must_dispatch'].sum():3d}/{num_requests_open:3d} must-go...", newline=False, flush=True)
 
         # Select the requests to dispatch using the strategy
         # Note: DQN strategy requires more than just epoch instance, bit hacky for compatibility with other strategies
@@ -97,6 +106,13 @@ def run_baseline(validator: Validator, strategy=None, seed: int = 1):
         # Map HGS solution to indices of corresponding requests
         epoch_solution = [epoch_instance_dispatch['request_idx'][route] for route in epoch_solution]
 
+        # Logging info to stderr
+        if VERBOSE:
+            num_requests_dispatched = sum([len(route) for route in epoch_solution])
+            num_requests_open = len(epoch_instance['request_idx']) - 1
+            num_requests_postponed = num_requests_open - num_requests_dispatched
+            log(f" {num_requests_dispatched:3d}/{num_requests_open:3d} dispatched and {num_requests_postponed:3d}/{num_requests_open:3d} postponed | Routes: {len(epoch_solution):2d} with cost {cost:6d}")
+
 
         # Submit solution to environment
         validator.push_data(epoch_solution)
@@ -106,6 +122,8 @@ def run_baseline(validator: Validator, strategy=None, seed: int = 1):
 
         total_reward += reward
 
+    if VERBOSE:
+        log(f"Cost of solution: {-total_reward}")
 
 def log(obj, newline=True, flush=False):
     # Write logs to stderr since program uses stdout to communicate with controller
@@ -119,15 +137,15 @@ def log(obj, newline=True, flush=False):
 if __name__ == "__main__":
     validator = Validator()
 
-    if args.strategy == 'supervised':
+    if CHOOSEN_STRATEGY == 'supervised':
         from baselines.supervised.utils import load_model
-        net = load_model(args.model_path, device='cpu')
+        net = load_model(MODEL_PATH, device='cpu')
         strategy = functools.partial(STRATEGIES['supervised'], net=net)
-    elif args.strategy == 'dqn':
+    elif CHOOSEN_STRATEGY == 'dqn':
         from baselines.dqn.utils import load_model
-        net = load_model(args.model_path, device='cpu')
+        net = load_model(MODEL_PATH, device='cpu')
         strategy = functools.partial(STRATEGIES['dqn'], net=net)
     else:
-        strategy = STRATEGIES[args.strategy]
+        strategy = STRATEGIES[CHOOSEN_STRATEGY]
 
     run_baseline(validator, strategy=strategy)
