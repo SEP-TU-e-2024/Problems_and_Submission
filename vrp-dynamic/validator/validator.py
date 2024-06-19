@@ -40,3 +40,5 @@ class Validator(IOModule):
         obs = self.env.step(solution=solution)
         self.observations.append(obs)
         self.score = obs[1]
+
+        super().push_data()
