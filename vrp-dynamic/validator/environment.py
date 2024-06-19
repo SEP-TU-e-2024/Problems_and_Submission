@@ -1,6 +1,6 @@
 import time
 import numpy as np
-import tools
+import validator.tools as tools
 import warnings
 
 _BIG_NUMBER = int(1e9)
@@ -96,7 +96,7 @@ class VRPEnvironment():
 
         return obs, info
 
-    def step(self, solution: Action) -> Tuple[State, int, bool, Info]:
+    def step(self, solution: Action) -> tuple[State, int, bool, Info]:
 
         assert not self.is_done, "Environment is finished"
 

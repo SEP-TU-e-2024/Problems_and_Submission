@@ -8,7 +8,7 @@ State = dict[str, np.ndarray]
 Action = list[list[int]]
 Info = dict[str, str]
 
-EPOCH_TLIM = 120
+EPOCH_TLIM = 5
 
 class Validator(IOModule):
     def __init__(self):

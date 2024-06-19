@@ -1,6 +1,3 @@
-
-
-
 class IOModule:
     """
     This is a base class that should be used as a template for the Validator.
@@ -8,7 +5,7 @@ class IOModule:
     Additionally it will push all scoring metrics to a file on termination of the program.
     """
 
-    _OUTPUT_FILE = "/results/results.csv"
+    FILE_OBJ = open("/results/results.csv", "w", newline="")
 
     def _score(self) -> dict:
         """
@@ -34,8 +31,6 @@ class IOModule:
     def __del__(self):
         """On termination of the program (when this object will be deleted) this will write all score metrics to a file"""
 
-        # Write score metrics to csv file
-        metrics_file = open(self._OUTPUT_FILE, "w", newline="")
-        metrics_file.write("Score\n")
-        metrics_file.write(str(self._score()["score"]))
-        metrics_file.close()
+        self.FILE_OBJ.write("Score\n")
+        self.FILE_OBJ.write(str(self._score()["score"]))
+        self.FILE_OBJ.close()
