@@ -1,6 +1,6 @@
 import numpy as np
-from environment import State
 
+State = dict[str, np.ndarray]
 
 def _filter_instance(observation: State, mask: np.ndarray):
     res = {}

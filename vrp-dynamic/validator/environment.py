@@ -3,13 +3,11 @@ import numpy as np
 import tools
 import warnings
 
-from typing import Dict, List, Tuple
-
 _BIG_NUMBER = int(1e9)
 
-State = Dict[str, np.ndarray]
-Action = List[List[int]]
-Info = Dict[str, str]
+State = dict[str, np.ndarray]
+Action = list[list[int]]
+Info = dict[str, str]
 
 class VRPEnvironment():
     """

@@ -10,7 +10,7 @@ import functools
 
 import tools
 from validator.validator import Validator
-from baselines.strategies import STRATEGIES
+from baselines.strategies._strategies import STRATEGIES
 from settings import CHOOSEN_STRATEGY, MODEL_PATH, VERBOSE
 
 def solve_static_vrptw(instance, time_limit=3600, tmp_dir="tmp", seed=1, initial_solution=None):
