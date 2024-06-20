@@ -21,7 +21,7 @@ class Validator(IOModule):
         self.observations = [(obs, None, False, info)]
 
     def _score(self) -> dict[str, int]:
-        return {"score": self.score}
+        return {"score": -self.score}
 
     def obtain_data(self) -> tuple[State, int, bool, Info]:
         """
