@@ -20,3 +20,5 @@ class Validator(IOModule):
     def push_data(self, num: int):
         if num == self.right_answer:
             self.reward = self.right_answer
+        
+        super().push_data()
