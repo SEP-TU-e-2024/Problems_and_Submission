@@ -1,14 +1,10 @@
-
-
-
 class IOModule:
     """
     This is a base class that should be used as a template for the Validator.
     It defines some basic functionality that should be implemented by the Validator: _score, obtain_data and push_data.
     Additionally it will push all scoring metrics to a file on termination of the program.
     """
-
-    _OUTPUT_FILE = "/results/results.csv"
+    OUTPUT_FILE = "/results/results.csv"
 
     def _score(self) -> dict:
         """
@@ -29,13 +25,6 @@ class IOModule:
         push_data is called by the submission code to push a new solution it has computed to the validator.
         The Validator must overwrite this function and define the appropriate datatype for such a solution.
         """
-        pass
-
-    def __del__(self):
-        """On termination of the program (when this object will be deleted) this will write all score metrics to a file"""
-
-        # Write score metrics to csv file
-        metrics_file = open(self._OUTPUT_FILE, "w", newline="")
-        metrics_file.write("Score\n")
-        metrics_file.write(str(self._score()["score"]))
-        metrics_file.close()
+        with open(self.OUTPUT_FILE, "w", newline="") as f:
+            f.write("Score\n")
+            f.write(str(self._score()["score"]))

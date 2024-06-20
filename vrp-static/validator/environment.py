@@ -1,65 +1,15 @@
 import time
 import numpy as np
-import tools
+import validator.tools as tools
 import warnings
-
-from typing import Dict, List, Tuple
 
 _BIG_NUMBER = int(1e9)
 
-State = Dict[str, np.ndarray]
-Action = List[List[int]]
-Info = Dict[str, str]
+State = dict[str, np.ndarray]
+Action = list[list[int]]
+Info = dict[str, str]
 
-
-class Environment:
-
-    def step(self, solution: Action) -> Tuple[State, int, bool, Info]:
-        raise NotImplementedError()
-
-    def reset(self, seed: int = None, instance: State = None, epoch_tlim: int = None, is_static: bool = None) -> State:
-        raise NotImplementedError()
-
-
-class ControllerEnvironment(Environment):
-    """
-    Environment for VRP with Time Windows that wraps interface with controller through the command line
-    """
-
-    def __init__(self, read_pipe, write_pipe):
-        super().__init__()
-        self.read_pipe = read_pipe
-        self.write_pipe = write_pipe
-
-    def step(self, solution: Action) -> Tuple[State, int, bool, Info]:
-        result = tools.json_loads_np(self._request('step', solution))
-
-        observation = result['observation']
-        reward = result['reward']
-        done = result['done']
-        info = result['info']
-
-        return (observation, reward, done, info)
-
-    def reset(self, seed: int = None, instance: State = None, epoch_tlim: int = None, is_static: bool = None) -> (State):
-        assert seed is None, "Argument seed must be None for controller environment as it is decided by controller"
-        assert instance is None, "Argument instance must be None for controller environment as it is decided by controller"
-        assert epoch_tlim is None, "Argument epoch_tlim must be None for controller environment as it is decided by controller"
-        assert is_static is None, "Argument is_static must be None for controller environment as it is decided by controller"
-        result = tools.json_loads_np(self._request('reset', None))
-        return result['observation'], result['info']
-
-    def _request(self, action: str, data=None):
-        self.write_pipe.write(tools.json_dumps_np({
-            'action': action,
-            'data': data
-        }))
-        self.write_pipe.write('\n')
-        self.write_pipe.flush()
-        return self.read_pipe.readline().strip()
-
-
-class VRPEnvironment(Environment):
+class VRPEnvironment():
     """
     Dynamic environment for VRP with Time Windows (VRPTW) where orders arrive during the day
     An instance is created by resampling customers, time windows and demands from a static VRPTW instance.
@@ -146,7 +96,7 @@ class VRPEnvironment(Environment):
 
         return obs, info
 
-    def step(self, solution: Action) -> Tuple[State, int, bool, Info]:
+    def step(self, solution: Action) -> tuple[State, int, bool, Info]:
 
         assert not self.is_done, "Environment is finished"
 
