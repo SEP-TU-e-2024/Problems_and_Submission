@@ -39,9 +39,9 @@ class Validator:
         if type(solution) != pyvrp.Solution:
             solution = pyvrp.Solution(data=pyvrp.read("instances/instance"), routes=RAWSOLUTION)
 
-        if not solution.is_feasable():
+        if not solution.is_feasible():
             raise ValueError("Solution provided is not valid")
 
         with open(self.OUTPUT_FILE, "w", newline="") as f:
             f.write("Score\n")
-            f.write(solution.distance_cost())
+            f.write(str(solution.distance_cost()))

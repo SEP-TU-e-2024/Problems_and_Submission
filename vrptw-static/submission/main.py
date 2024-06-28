@@ -1,6 +1,7 @@
 from pyvrp import Model
+from pyvrp.stop import MaxRuntime
 
-from validator.Validator import Validator
+from validator.validator import Validator
 
 
 def main():
@@ -8,7 +9,7 @@ def main():
     problem = val.obtain_data(raw=False)
 
     model = Model.from_data(problem)
-    result = model.solve()
+    result = model.solve(stop=MaxRuntime(30), display=False)
 
     val.push_data(result.best)
 
