@@ -15,7 +15,7 @@ class Validator(IOModule):
         self.observations: list[tuple[State, int, bool, Info]] = list()
         self.score: int = None
 
-        static_instance = tools.read_vrplib(f'instances/instance')
+        static_instance = tools.read_vrplib("instances/instance")
         self.env = VRPEnvironment(instance=static_instance, epoch_tlim=EPOCH_TLIM, is_static=False)
         obs, info = self.env.reset()
         self.observations = [(obs, None, False, info)]
