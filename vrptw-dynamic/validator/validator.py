@@ -1,4 +1,3 @@
-from validator.IOModule import IOModule
 from validator.environment import VRPEnvironment
 import validator.tools as tools
 
@@ -10,18 +9,16 @@ Info = dict[str, str]
 
 EPOCH_TLIM = 5
 
-class Validator(IOModule):
+class Validator():
+    OUTPUT_FILE = "/results/results.csv"
+
     def __init__(self):
         self.observations: list[tuple[State, int, bool, Info]] = list()
-        self.score: int = None
 
         static_instance = tools.read_vrplib("instances/instance")
         self.env = VRPEnvironment(instance=static_instance, epoch_tlim=EPOCH_TLIM, is_static=False)
         obs, info = self.env.reset()
         self.observations = [(obs, None, False, info)]
-
-    def _score(self) -> dict[str, int]:
-        return {"score": -self.score}
 
     def obtain_data(self) -> tuple[State, int, bool, Info]:
         """
@@ -39,6 +36,7 @@ class Validator(IOModule):
     def push_data(self, solution: Action):
         obs = self.env.step(solution=solution)
         self.observations.append(obs)
-        self.score = obs[1]
 
-        super().push_data()
+        with open(self.OUTPUT_FILE, "w", newline="") as f:
+            f.write("cost\n")
+            f.write(str(-obs[1]))

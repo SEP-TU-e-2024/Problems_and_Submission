@@ -43,5 +43,5 @@ class Validator:
             raise ValueError("Solution provided is not valid")
 
         with open(self.OUTPUT_FILE, "w", newline="") as f:
-            f.write("Score\n")
+            f.write("cost\n")
             f.write(str(solution.distance_cost()))

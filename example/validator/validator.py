@@ -1,6 +1,6 @@
-from validator.IOModule import IOModule
+class Validator():
+    OUTPUT_FILE = "/results/results.csv"
 
-class Validator(IOModule):
     def __init__(self):
         self.reward = 0
 
@@ -8,9 +8,6 @@ class Validator(IOModule):
             lines = f.readlines()
             self.right_answer = int(lines[0])
             self.numbers = [int(n) for n in lines[1:]]
-
-    def _score(self) -> dict:
-        return {"score": self.reward}
 
     def obtain_data(self) -> int:
         if len(self.numbers) == 0:
@@ -21,4 +18,6 @@ class Validator(IOModule):
         if num == self.right_answer:
             self.reward = self.right_answer
         
-        super().push_data()
+        with open(self.OUTPUT_FILE, "w", newline="") as f:
+            f.write("reward\n")
+            f.write(self.reward)
