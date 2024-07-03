@@ -16,8 +16,8 @@ class Validator():
 
     def push_data(self, num: int):
         if num == self.right_answer:
-            self.reward = self.right_answer
+            self.reward = 1
         
         with open(self.OUTPUT_FILE, "w", newline="") as f:
             f.write("reward\n")
-            f.write(self.reward)
+            f.write(str(self.reward))
